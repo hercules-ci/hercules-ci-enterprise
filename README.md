@@ -44,3 +44,7 @@ Start the GitLab by navigating to `https://<hercules-ci>/install/gitlab`. Comple
 Navigate to a group's Settings to enable the integration for the group.
 
 Configure an agent for the group and set `settings.apiBaseUrl` to your instance, previously referred to as `https://<hercules-ci>`.
+
+# How do I get support?
+
+Use [support@hercules-ci.com](mailto:support@hercules-ci.com) or your company's Slack Connect channel.
