@@ -29,7 +29,7 @@ $ CACHIX_AUTH_TOKEN=$(jq -r .cacheToken <tokens.json) cachix use hercules-ci-ent
 Configured private read access credentials in /home/user/.config/nix/netrc
 Configured https://hercules-ci-enterprise.cachix.org binary cache in /home/user/.config/nix/nix.conf
 
-$ nix develop --impure
+$ nix develop github:hercules-ci/hercules-ci-enterprise --impure
 Welcome to the Hercules CI Enterprise setup shell!
 
 $ hercules-generate-config
