@@ -128,7 +128,7 @@ cat >"configuration-hercules.nix" <<EOF
             , $RABBITMQ_ENCRYPTED_PASSWORD
             }
           , {config_entry_decoder
-            , [ {passphrase, {file, <<"${config.age.secrets."rabbitmq-config.key".path}">>}}
+            , [ {passphrase, {file, <<"\${config.age.secrets."rabbitmq-config.key".path}">>}}
               , {cipher, blowfish_cfb64}
               , {hash, sha256}
               , {iterations, 10000}

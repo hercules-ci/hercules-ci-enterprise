@@ -33,15 +33,18 @@ $ nix develop github:hercules-ci/hercules-ci-enterprise --impure
 Welcome to the Hercules CI Enterprise setup shell!
 
 $ hercules-generate-config
+
+$ ls hercules-config
 ```
 
-Complete the generated configuration files in the generated `hercules-config` directory and integrate it into a NixOS configuration.
+Complete the generated configuration files in the generated `hercules-config` directory and integrate it into your NixOS deployment.
  - Domain and TLS settings
  - SMTP settings
 
 Create the secrets with agenix. The generated config uses the following `secrets.nix` entries:
 
 ```nix
+#                acquire and enter the public keys before proceeding
 let herculesCI = [ "<hercules CI host key>" "<user key 1>" ..... ];
 in {
   "hercules-ci/keys.json.age".publicKeys = herculesCI;
@@ -50,9 +53,44 @@ in {
 }
 ```
 
-Create the `.age` files with agenix. Remove the unencrypted generated secrets.
+Paste the generated secrets into agenix:
 
-Make sure Hercules CI Enterprise starts up without authentication errors relating to S3 and RabbitMQ.
+```console
+mkdir hercules-ci
+agenix -e hercules-ci/keys.json.age
+agenix -e hercules-ci/rabbitmq-config.key.age
+agenix -e hercules-ci/minio-rootCredentialsFile.key.age
+```
+
+Remove the unencrypted generated secrets.
+
+```
+rm hercules-config/hercules-ci-enterprise-keys.json
+rm hercules-config/minio-rootCredentialsFile.key
+rm hercules-config/rabbitmq-config.key
+```
+
+Integrate the config file and modules. E.g.
+
+`flake.nix`
+```
+{
+  inputs.hercules-ci-enterprise.url = "github:hercules-ci/hercules-ci-enterprise";
+
+  outputs = { nixpkgs, hercules-ci-enterprise, ... }:
+  # .....
+  {
+    nixosConfigurations.hercules-ci = nixosSystem {
+      modules = [
+        ./configuration-hercules.nix
+        hercules-ci-enterprise.nixosModules.single-machine-age
+      ];
+    }
+  };
+}
+```
+
+Deploy and make sure Hercules CI Enterprise starts up without authentication errors relating to S3 and RabbitMQ.
 
 Open your Hercules CI Enterprise in the browser: `https://${services.hercules-backend.domain}`.
 
