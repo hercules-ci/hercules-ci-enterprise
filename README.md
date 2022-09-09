@@ -18,6 +18,8 @@ It's perfect for when rules and regulations require all parts of CI/CD system to
 
 ### How do I install it?
 
+By installing Hercules CI Enterprise, you agree with [End User License Agreement](./EULA.md).
+
 Get a `tokens.json` ([info@hercules-ci.com](info@hercules-ci.com)).
 
 Create a directory for your deployment. Put `tokens.json` into this directory.
