@@ -1,6 +1,7 @@
 #!@bash@/bin/bash
 set -euo pipefail
 
+oldPwd="$PWD"
 workDir="$PWD/hercules-config"
 help="false"
 
@@ -41,6 +42,9 @@ RABBITMQ_CONFIG_KEY="$(set +o pipefail; tr -cd a-zA-Z0-9 </dev/urandom | head -c
 RABBITMQ_PASSWORD="$(set +o pipefail; tr -cd a-zA-Z0-9 </dev/urandom | head -c 40)"
 RABBITMQ_ENCRYPTED_PASSWORD="$(@rabbitmq@/bin/rabbitmqctl --quiet encode --cipher blowfish_cfb64 --hash sha256 --iterations 10000 '<<"'"$RABBITMQ_PASSWORD"'">>' "$RABBITMQ_CONFIG_KEY")"
 
+MINIO_ROOT_USER="root"
+MINIO_ROOT_PASSWORD="$(head -c $[256/8] </dev/urandom | base64)"
+
 hercules-jwkgen
 echo -n $(head -c $[256/8] </dev/urandom | base64) >./storage-encryption.key
 
@@ -50,10 +54,10 @@ echo null | @jq@/bin/jq >hercules-ci-enterprise-keys.json '{
     "password": "....."
   },
   "s3": {
-    "accessKey": ".....",
-    "secretKey": "....."
+    "accessKey": $minioRootUser,
+    "secretKey": $minioRootPassword
   },
-  "rabbitmq": {
+  "queuesConfig": {
     "password": $rabbitmqPassword,
   },
   "auth": {
@@ -61,15 +65,24 @@ echo null | @jq@/bin/jq >hercules-ci-enterprise-keys.json '{
     "publicJWK": $publicJWK
   },
   "storageEncryptionKey": $storageEncryptionKey,
+  "licenseKey": $licenseKey,
 }' \
   --arg rabbitmqPassword "$RABBITMQ_PASSWORD" \
   --rawfile privateJWK ./private-jwk.json \
   --rawfile publicJWK ./public-jwk.json \
   --rawfile storageEncryptionKey ./storage-encryption.key \
+  --arg licenseKey "$(jq -r <"$oldPwd/tokens.json" .licenseKey)" \
+  --arg minioRootPassword "$MINIO_ROOT_PASSWORD" \
+  --arg minioRootUser "$MINIO_ROOT_USER" \
   ;
 
 
 echo $RABBITMQ_CONFIG_KEY >./rabbitmq-config.key
+
+(
+  echo "MINIO_ROOT_USER=$MINIO_ROOT_USER"
+  echo "MINIO_ROOT_PASSWORD=$MINIO_ROOT_PASSWORD"
+) >./minio-rootCredentialsFile.key
 
 rm storage-encryption.key private-jwk.json public-jwk.json
 
@@ -77,22 +90,25 @@ cat >"configuration-hercules.nix" <<EOF
 { config, lib, pkgs, ... }:
 {
   config = {
+
+    age.secrets."hercules-ci-keys.json".file =
+      ../secrets/hercules-ci/keys.json.age;
+    age.secrets."rabbitmq-config.key".file =
+      ../secrets/hercules-ci/rabbitmq-config.key.age;
+    age.secrets."minio-rootCredentialsFile.key".file =
+      ../secrets/hercules-ci/minio-rootCredentialsFile.key.age;
+
     services.hercules-backend = {
-      # domain = ...;
+      # domain = ".....";
 
-      # For AWS
-      # s3.defaultRegion = ...; # e.g. "us-east-1"
-      # For MinIO or other providers (optional)
-      # s3.hostOverride = ...;
-
-      # s3.buckets.state = ...; # name of the bucket for state files
-      # s3.buckets.logs = ...; # name of the bucket for logs
-
+      # s3.buckets.state = "hercules-ci-state"; # name of the bucket for state files
+      # s3.buckets.logs = "hercules-ci-logs"; # name of the bucket for logs
+      
+      # notificationEmailSender = "notification@......";
       # smtp = {
-      #   server = ...;
-      #   port = ...;
-      # };
-      # notificationEmailSender = ...; # e.g. "noreply@hercules-ci.example.com"
+      #  server = "localhost";
+      #  port = 587;
+      #};
     };
 
     # Either a directory containing ssl.crt and ssl.key
@@ -112,7 +128,7 @@ cat >"configuration-hercules.nix" <<EOF
             , $RABBITMQ_ENCRYPTED_PASSWORD
             }
           , {config_entry_decoder
-            , [ {passphrase, {file, <<"/var/lib/hercules/rabbit/rabbitmq-config.key">>}}
+            , [ {passphrase, {file, <<"${config.age.secrets."rabbitmq-config.key".path}">>}}
               , {cipher, blowfish_cfb64}
               , {hash, sha256}
               , {iterations, 10000}

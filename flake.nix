@@ -19,6 +19,7 @@
 
           drvPath = throw "hercules-ci-enterprise: ${path} is not buildable. It can only be substituted.";
         };
+        dist = self.packages.x86_64-linux.dist;
       in
       {
         imports = [
@@ -65,12 +66,18 @@
               ];
             };
           };
+          nixosModules.single-machine-age = {
+            imports = [
+              self.nixosModules.single-machine
+              "${dist}/enterprise/single-machine-age.nix"
+            ];
+          };
           nixosModules.single-machine = { pkgs, ... }: {
             imports = [
-              ./single-machine.nix
               self.nixosModules.packages
-              (self.packages.x86_64-linux.dist + "/web/module.nix")
-              (self.packages.x86_64-linux.dist + "/backend/module.nix")
+              "${dist}/enterprise/single-machine.nix"
+              "${dist}/web/module.nix"
+              "${dist}/backend/module.nix"
             ];
           };
         };
