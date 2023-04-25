@@ -135,3 +135,16 @@ nix flake lock --recreate-lock-file
 # How do I get support?
 
 Use [support@hercules-ci.com](mailto:support@hercules-ci.com) or your company's Slack Connect channel.
+
+# How do I enable profiling?
+
+To the NixOS configuration, add:
+
+```nix
+  services.hercules-backend.profiling.heap.enable = true;
+```
+
+This creates `/var/log/hercules-server/hercules-server.hp` on the host.
+You may compress the file and send it to [support@hercules-ci.com](mailto:support@hercules-ci.com), using a file sharing service if necessary.
+
+Do not enable profiling for a prolonged time period, as the heap profile file will grow indefinitely.
