@@ -13,12 +13,10 @@
           inherit name;
           type = "derivation";
           outputs = [ "out" ];
-          /*
-          Hercules CI Enterprise needs builtins.storePath to pull in
-          the binaries. Please allow this with `--impure`. */ outPath = builtins.storePath path;
-
+          outPath = postulateStorePath path;
           drvPath = throw "hercules-ci-enterprise: ${path} is not buildable. It can only be substituted.";
         };
+        postulateStorePath = path: builtins.appendContext path { "${path}" = { path = true; }; };
         dist = self.packages.x86_64-linux.dist;
       in
       {
