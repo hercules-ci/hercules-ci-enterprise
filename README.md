@@ -148,3 +148,33 @@ This creates `/var/log/hercules-server/hercules-server.hp` on the host.
 You may compress the file and send it to [support@hercules-ci.com](mailto:support@hercules-ci.com), using a file sharing service if necessary.
 
 Do not enable profiling for a prolonged time period, as the heap profile file will grow indefinitely.
+
+# Release Notes
+
+## 2023-12-17
+
+If you upgrade to NixOS 23.11 while deploying the update, note that rabbitmq may fail to upgrade. It may help to run **before the update**:
+
+```
+sudo -u rabbitmq rabbitmqctl enable_feature_flag all
+```
+
+If, after the update, rabbitmq does not start, you may reset its state. Usually rabbitmq holds no in-flight messages, so no loss occurs:
+
+```
+# not needed if rabbitmq operates normally after the update
+systemctl stop rabbitmq.service rabbitmq.socket
+cp -a /var/lib/rabbitmq/ /var/lib/rabbitmq.old
+rm -rf /var/lib/rabbitmq/*
+rm -rf /var/lib/rabbitmq/.erlang.cookie
+systemctl start rabbitmq.socket rabbitmq.service
+systemctl restart hercules-initialize.service
+systemctl restart hercules-server.service
+```
+
+### Highlights
+
+* Many dependency updates
+* Agent 0.10 support
+* Evaluate the Hercules CI Enterprise deployment itself in pure mode
+* Fix error when repositories has no default branch
