@@ -151,6 +151,14 @@ Do not enable profiling for a prolonged time period, as the heap profile file wi
 
 # Release Notes
 
+## 2024-01-11
+
+Highlights:
+
+* Fix evaluation in pure mode
+* Reliability improvements in the Effects feature
+* [Query jobs by revision](https://hercules-ci.com/api/v1/#/project/get_api_v1_projects__projectId__jobs) in the API
+
 ## 2023-12-17
 
 If you upgrade to NixOS 23.11 while deploying the update, note that rabbitmq may fail to upgrade. It may help to run **before the update**:

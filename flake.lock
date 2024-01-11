@@ -1,5 +1,18 @@
 {
   "nodes": {
+    "dist": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1705007682,
+        "narHash": "sha256-+tgvegN7rW5WAnhKrlAM6i+aE9Tzrkq76G7Lx1JHuH8=",
+        "type": "tarball",
+        "url": "https://hercules-ci-enterprise.cachix.org/serve/6jcx2iijjdn3srvvl4gxrxsv377mlwsx/hercules-ci-enterprise.tar"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://hercules-ci-enterprise.cachix.org/serve/6jcx2iijjdn3srvvl4gxrxsv377mlwsx/hercules-ci-enterprise.tar"
+      }
+    },
     "flake-parts": {
       "inputs": {
         "nixpkgs": [
@@ -37,6 +50,7 @@
     },
     "root": {
       "inputs": {
+        "dist": "dist",
         "flake-parts": "flake-parts",
         "nixpkgs": "nixpkgs"
       }

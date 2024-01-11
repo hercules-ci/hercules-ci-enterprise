@@ -4,9 +4,11 @@
   inputs = {
     flake-parts.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
+    dist.url = "https://hercules-ci-enterprise.cachix.org/serve/6jcx2iijjdn3srvvl4gxrxsv377mlwsx/hercules-ci-enterprise.tar";
+    dist.flake = false;
   };
 
-  outputs = { self, flake-parts, ... }:
+  outputs = { self, flake-parts, dist, ... }:
     flake-parts.lib.mkFlake { inherit self; } ({ config, lib, ... }:
       let
         mkPackage = name: path: {
@@ -17,7 +19,6 @@
           drvPath = throw "hercules-ci-enterprise: ${path} is not buildable. It can only be substituted.";
         };
         postulateStorePath = path: builtins.appendContext path { "${path}" = { path = true; }; };
-        dist = self.packages.x86_64-linux.dist;
       in
       {
         imports = [
@@ -42,7 +43,7 @@
             '';
           };
           apps.hercules-generate-config.program = config.packages.hercules-generate-config;
-          packages = lib.mapAttrs mkPackage (lib.importJSON ./hercules-ci-dependencies.json) // {
+          packages = lib.mapAttrs mkPackage (lib.importJSON (dist + "/hercules-ci-dependencies.json")) // {
             hercules-generate-config = pkgs.callPackage ./src/generate-config.nix { };
           };
           checks.example = (lib.nixosSystem {
