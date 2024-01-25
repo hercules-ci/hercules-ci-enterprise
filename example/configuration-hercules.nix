@@ -12,11 +12,14 @@
       s3.buckets.state = "hercules-state"; # name of the bucket for state files
       s3.buckets.logs = "hercules-logs"; # name of the bucket for logs
 
-      # smtp = {
-      #   server = ...;
-      #   port = ...;
-      # };
-      # notificationEmailSender = ...; # e.g. "noreply@hercules-ci.example.com"
+      smtp = {
+        server = "mail.example.com";
+        port = 587;
+      };
+      notificationEmailSender = "notifications@hercules-ci.example.com";
+
+      # If not using e.g. single-machine-age, you can set this manually.
+      secretsFile = "/var/keys/hercules-ci/hercules-ci.json";
     };
 
     # Either a directory containing ssl.crt and ssl.key
