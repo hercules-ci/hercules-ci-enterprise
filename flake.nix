@@ -86,6 +86,7 @@
               self.nixosModules.packages
               "${dist}/web/module.nix"
               "${dist}/backend/module.nix"
+              "${dist}/backend/secrets-from-file.nix"
             ];
           };
         };
