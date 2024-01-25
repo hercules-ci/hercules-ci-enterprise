@@ -114,10 +114,15 @@ You will need to provide values for:
 <!-- FIXME: this still contains general defs -->
 
 ```nix
+{
+  imports = [ hercules-ci-enterprise.nixosModules.application-plus-nginx ];
+  config = {
     services.hercules-backend.enable = true;
     services.hercules-backend.postgresConnectionURL = "...";
     services.hercules-backend.s3.defaultRegion = "...";
     services.hercules-backend.s3.hostOverride = "http://...";
+    # example, age:
+    services.hercules-backend.secretsFile = config.age.secrets."hercules-ci-keys.json".path;
 
     services.hercules-web.domain = lib.mkDefault config.services.hercules-backend.domain;
     services.hercules-web.backend = "http://localhost:${toString config.services.hercules-backend.port}";
@@ -128,6 +133,8 @@ You will need to provide values for:
     # optionally, to smoothen startup when infrastructure status is known to systemd
     systemd.services.hercules-initialize.requires = infraServices;
     systemd.services.hercules-migrate.requires = infraServices;
+  };
+}
 ```
 
 # How do I update it?
