@@ -73,8 +73,17 @@
           };
           nixosModules.single-machine = { pkgs, ... }: {
             imports = [
-              self.nixosModules.packages
+              self.nixosModules.application-plus-nginx
               "${dist}/enterprise/single-machine.nix"
+            ];
+          };
+
+          # No infra services, such as postgresql, rabbitmq, etc.
+          # You will have to configure your own.
+          # This does enable nginx and configure it.
+          nixosModules.application-plus-nginx = {
+            imports = [
+              self.nixosModules.packages
               "${dist}/web/module.nix"
               "${dist}/backend/module.nix"
             ];

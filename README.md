@@ -102,6 +102,34 @@ Navigate to a GitLab Group's _Settings_ to enable the integration for the group.
 
 Configure an agent for the group and set `settings.apiBaseUrl` to your instance, to the value of `https://${services.hercules-backend.domain}`.
 
+# Run on separately managed infrastructure services
+
+The `single-machine` NixOS modules create a self-contained deployment.
+This may not be what you want, if you want to manage your own PostgreSQL, S3, or RabbitMQ services, or if the bundled infrastructure config interferes with other services on the host.
+
+In this situation, you may use `nixosModules.application-plus-nginx`, which does still include an nginx configuration.
+
+You will need to provide values for:
+
+<!-- FIXME: this still contains general defs -->
+
+```nix
+    services.hercules-backend.enable = true;
+    services.hercules-backend.postgresConnectionURL = "...";
+    services.hercules-backend.s3.defaultRegion = "...";
+    services.hercules-backend.s3.hostOverride = "http://...";
+
+    services.hercules-web.domain = lib.mkDefault config.services.hercules-backend.domain;
+    services.hercules-web.backend = "http://localhost:${toString config.services.hercules-backend.port}";
+    services.hercules-web.agentSocketDomain = lib.mkDefault config.services.hercules-web.domain;
+    services.hercules-web.bulkSocketDomain = lib.mkDefault config.services.hercules-web.domain;
+    services.hercules-web.marketingBackend = lib.mkDefault null;
+
+    # optionally, to smoothen startup when infrastructure status is known to systemd
+    systemd.services.hercules-initialize.requires = infraServices;
+    systemd.services.hercules-migrate.requires = infraServices;
+```
+
 # How do I update it?
 
 ### Configure the private cache
