@@ -3,14 +3,14 @@
     "dist": {
       "flake": false,
       "locked": {
-        "lastModified": 1705007682,
-        "narHash": "sha256-+tgvegN7rW5WAnhKrlAM6i+aE9Tzrkq76G7Lx1JHuH8=",
+        "lastModified": 1708333958,
+        "narHash": "sha256-cUsHmzMEvBsf0Wq4kfkFh18u1tJLRC0TuG2h+7Grbqk=",
         "type": "tarball",
-        "url": "https://hercules-ci-enterprise.cachix.org/serve/6jcx2iijjdn3srvvl4gxrxsv377mlwsx/hercules-ci-enterprise.tar"
+        "url": "https://hercules-ci-enterprise.cachix.org/serve/96iwk990qm6f28wy9kqyxmvwlr1b6vm1/hercules-ci-enterprise.tar"
       },
       "original": {
         "type": "tarball",
-        "url": "https://hercules-ci-enterprise.cachix.org/serve/6jcx2iijjdn3srvvl4gxrxsv377mlwsx/hercules-ci-enterprise.tar"
+        "url": "https://hercules-ci-enterprise.cachix.org/serve/96iwk990qm6f28wy9kqyxmvwlr1b6vm1/hercules-ci-enterprise.tar"
       }
     },
     "flake-parts": {
