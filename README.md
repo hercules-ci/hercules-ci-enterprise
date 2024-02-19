@@ -186,6 +186,11 @@ Do not enable profiling for a prolonged time period, as the heap profile file wi
 
 # Release Notes
 
+## 2024-02-19
+
+Highlights
+* Add verbosity filter in job evaluation log
+
 ## 2024-01-11
 
 Highlights:
