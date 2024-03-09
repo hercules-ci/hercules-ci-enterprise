@@ -4,7 +4,7 @@
   inputs = {
     flake-parts.inputs.nixpkgs.follows = "nixpkgs";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-22.05";
-    dist.url = "https://hercules-ci-enterprise.cachix.org/serve/96iwk990qm6f28wy9kqyxmvwlr1b6vm1/hercules-ci-enterprise.tar";
+    dist.url = "https://hercules-ci-enterprise.cachix.org/serve/lf5i7w9dz3sjgj1x3l695n1752ix6wdc/hercules-ci-enterprise.tar";
     dist.flake = false;
   };
 
